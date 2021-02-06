@@ -34,9 +34,9 @@ If you want to work on a sub-branch of your branch, like develop some new featur
 
 - Merge the new feature to your branch (merging branch to main branch is similar)
 ``` 
-git pull origin develop
-git checkout develop
+git pull origin your_branch_name
+git checkout your_branch_name
 git merge --no-ff some-feature
-git push origin develop
+git push origin your_branch_name
 ```
 
