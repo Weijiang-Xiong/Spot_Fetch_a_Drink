@@ -14,7 +14,7 @@ Get this repo and create your own branch.
 
 - Clone the repo with `git clone git@github.com:Weijiang-Xiong/Spot_Fetch_a_Drink.git Spot_Masters`
 
-- Navigate to the folder `git cd Spot_Masters`
+- Navigate to the folder `cd Spot_Masters`
 
 - Create your branch `git checkout -b your_branch_name`
 
@@ -24,7 +24,19 @@ Get this repo and create your own branch.
 
 Then you are on your own branch, and you can work on your own module, say create some new functionality for the project.
 
-If you want to work on a subbranch of your branch, like develop some new features based on your module.
+If you want to work on a sub-branch of your branch, like develop some new features based on your module.
 
-- `git checkout -b some-feature your_branch_name`
+- Create a new branch based on your existing branch `git checkout -b some-feature your_branch_name`
+
+- When you have done this new feature, add the new files or modified files to git `git add path_to_files`
+
+- commit the change `git commit -m "developed a feature to do something"`
+
+` Merge the new feature to your branch (merging branch to main branch is similar)
+``` 
+git pull origin develop
+git checkout develop
+git merge --no-ff some-feature
+git push origin develop
+```
 
