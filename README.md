@@ -32,7 +32,7 @@ If you want to work on a sub-branch of your branch, like develop some new featur
 
 - commit the change `git commit -m "developed a feature to do something"`
 
-` Merge the new feature to your branch (merging branch to main branch is similar)
+- Merge the new feature to your branch (merging branch to main branch is similar)
 ``` 
 git pull origin develop
 git checkout develop
