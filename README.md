@@ -12,7 +12,7 @@ Get this repo and create your own branch.
 
 - Open a terminal where you wish to store the files
 
-- Clone the repo with `git clone git@github.com:Weijiang-Xiong/Spot_Fetch_a_Drink.git Spot_Masters`
+- Clone the repo with `git clone https://github.com/Weijiang-Xiong/Spot_Fetch_a_Drink.git Spot_Masters`
 
 - Navigate to the folder `cd Spot_Masters`
 
