@@ -94,7 +94,8 @@ roslaunch champ_teleop teleop.launch
 
 And you can move the robot with keyboard 
 
-![](./pics/spot teleop.png)
+![TeleOp](pics/spot_teleop.png)
+
 
 
 
