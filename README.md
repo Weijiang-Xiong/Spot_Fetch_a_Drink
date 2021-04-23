@@ -110,7 +110,15 @@ sudo apt-get install python python-all-dev python-pip build-essential swig git l
 python -m pip install pocketsphinx
 ```
 
-Install python SpeechRecognition package, pyAudio and a ros wrapper, then fix a small bug.
+Install python SpeechRecognition package, pyAudio 
+
+```bash
+sudo apt-get install python-pyaudio python3-pyaudio
+python -m pip install google-cloud-speech
+python -m pip install SpeechRecognition
+```
+
+Install ros speech recognition package, then fix a small bug.
 
 ```bash
 sudo apt install ros-melodic-ros-speech-recognition
