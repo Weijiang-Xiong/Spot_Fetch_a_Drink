@@ -141,12 +141,12 @@ python -m pip install nltk==3.4.5
 sudo apt install snapd
 sudo snap install aria2c
 # download the library
-aria2c -x 4 <http://nlp.stanford.edu/software/stanford-corenlp-latest.zip>
+aria2c -x 4 http://nlp.stanford.edu/software/stanford-corenlp-latest.zip
 unzip stanford-corenlp-latest.zip
 mv ./stanford-corenlp-4.2.0/ ./CoreNLP
 cd CoreNLP
 # download an additional model
-aria2c -x 4 <http://nlp.stanford.edu/software/stanford-corenlp-4.2.0-models-english.jar>
+aria2c -x 4 http://nlp.stanford.edu/software/stanford-corenlp-4.2.0-models-english.jar
 ```
 
 run CoreNLP server
