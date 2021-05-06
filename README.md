@@ -154,7 +154,7 @@ run CoreNLP server
 ```bash
 export CLASSPATH=$CLASSPATH:~/Spot_Project/CoreNLP/*:
 cd ~/Spot_Project/CoreNLP
-java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer \\
--preload tokenize,ssplit,pos,lemma,ner,parse,depparse \\
+java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer \
+-preload tokenize,ssplit,pos,lemma,ner,parse,depparse \
 -status_port 9000 -port 9000 -timeout 15000 &
 ```
