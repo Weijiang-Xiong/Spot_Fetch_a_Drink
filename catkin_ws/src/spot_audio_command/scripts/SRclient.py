@@ -1,19 +1,48 @@
-from __future__ import division, with_statement, print_function
-# remember to set this environment variable before running the nlp server 
-# export CLASSPATH=$CLASSPATH:~/Spot_Project/CoreNLP/*:
+#!/usr/bin/env python3
+
+# when using python 2, uncomment this and remove all function annotations
+# from __future__ import division, with_statement, print_function
+
+# print the python version
+# import sys
+# print(sys.version)
 
 import rospy
-from nltk.parse.corenlp import CoreNLPDependencyParser
 from ros_speech_recognition import SpeechRecognitionClient
-from .utils import MapKnowledge, Action, RobotSpeechClient, TestCase
+from utils import Action, RobotSubject, TestCase
+from utils import CoreNLPEnhancedDependencyParser
+from typing import List, Tuple, Dict
 
-def parse_dep(dep_tree):
-    '''parse a single dependence tree, may result in several commands
+def parse_tree(dep_tree, robot:RobotSubject):
+    ''' parse a single dependence tree, may result in several commands
+        The parsing consists of four steps, which separately determine:
+            1. actions of the robot
+            2. relations of the actions
+            3. items involved in each action
+            4. requirements of the items
     '''
-    action = Action()
-    action.parse_dep(dep_tree)
-    action.print_info()
-    return action.gen_command()
+    print("{} will do the following things:".format(robot.name))
+    ## find the actions to be carried out by this robot
+    ## example (('send', 'VB'), 'nsubj', ('Alice', 'NNP')), word "send" has a nominal subject "Alice"
+    for ((governor, gov_pos), relation, (dependent, _)) in dep_tree:
+        if relation=="nsubj":
+            if dependent==robot.name and gov_pos=="VB":
+                robot.action_list.append(Action(governor))
+                
+    # find the actions are combined by "and" or "or", "and" by default       
+    robot_actions = [action.name for action in robot.action_list]    
+    for ((governor, gov_pos), relation, (dependent, _)) in dep_tree:
+        if relation == "conj:or":
+            if governor in robot_actions and dependent in robot_actions:
+                robot.do_all = False
+            
+    ## find everything related to the verbs
+    cmd_list = []
+    for action in robot.action_list:
+        action.parse_dep(dep_tree)
+        cmd_list.extend(action.gen_command(print_result=True))
+        
+    return cmd_list
 
 def simplify(cmd_list):
     ''' remove duplicated commands from the list
@@ -21,7 +50,7 @@ def simplify(cmd_list):
     # TODO add rules to eliminate duplicates
     return cmd_list
 
-def gen_commands(dep_parser, sentence):
+def gen_commands(dep_parser, sentence, robot:RobotSubject, send_ros = False):
     """ process a sentence, and generates a list of navigation goals and tasks
 
     Args:
@@ -33,35 +62,55 @@ def gen_commands(dep_parser, sentence):
         cmd_list: a list whose element is (navigation_goal, task_at_goal)
     """
     
-    parses = dep_parser.parse(sentence.split())
-
-    parse_results = [[(governor, dep, dependent) 
-                        for governor, dep, dependent in parse.triples()] 
-                            for parse in parses]
+    parses = tuple(dep_parser.parse(sentence.split()))
     cmd_list = []
-    for dep_tree in parse_results:
-         cmd_list.extend(parse_dep(dep_tree))
-
-    return simplify(cmd_list)
+    for dep_tree in parses:
+        cmd_list.extend(parse_tree(dep_tree, robot))
+    
+    cmd_list = simplify(cmd_list)
+    
+    if send_ros:
+        robot.publish_task_to_ros(cmd_list)
+        robot.clear_data()
+    return cmd_list
 
 def main():
 
-    rospy.init_node("client")
+    rospy.init_node("SRclient")
     client = SpeechRecognitionClient()
-    dep_parser = CoreNLPDependencyParser(url='http://localhost:9000')
+    # dep_parser = CoreNLPDependencyParser(url='http://localhost:9000')
+    dep_parser = CoreNLPEnhancedDependencyParser(url='http://localhost:9000')
+    
+    # at first we have 2 robots working, which will be Alice and Charlie
+    for _ in range(2):
+        RobotSubject.create_robot()
+        all_robots:Dict[str, RobotSubject] = RobotSubject.get_working_bots()
 
+    result = TestCase()
+    
     while not rospy.is_shutdown():
-        result = client.recognize()  # Please say 'Hello, world!' towards microphone
-        # result = TestCase()
-        print(result) # => 'Hello, world!'
+        # result = client.recognize()  # Please say 'Hello, world!' towards microphone
+        if len(result.transcript) == 0:
+            continue
+        
         for sentence in result.transcript:
-            if "hey spot" in sentence:
-                sentence = sentence.lower().replace("spot", "spot ,", 1) # add a comma behind "spot"
-                cmd_list = gen_commands(dep_parser, sentence)
+            print(sentence) # => 'Hello, world!'
+            # sentence: str
+            if sentence.startswith("hey"):
+                # robot name should be one of the active
+                robot_name = sentence.split("hey", 1)[-1].split()[0]
+                if robot_name.capitalize() not in all_robots.keys():
+                    rospy.loginfo("{} is not working".format(robot_name))
+                    continue
+                sentence = sentence.replace(robot_name, robot_name.capitalize()+" ,", 1) # add a comma behind name
+                cmd_list = gen_commands(dep_parser, sentence, all_robots[robot_name], send_ros=True)
             else:
-                print("Please start with hey spot")
-
+                rospy.loginfo("Please start with \'hey ROBOT_NAME\'")
+        print("")
 
 if __name__ == "__main__":
-	main()
+	try:
+		main()
+	except rospy.ROSInterruptException:
+		pass
 

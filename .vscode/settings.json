@@ -1,0 +1,12 @@
+{
+    "python.pythonPath": "/usr/bin/python3",
+    // extra paths for pylance, auto complete in the editor
+    "python.analysis.extraPaths": [
+        "./catkin_ws/src/spot_audio_command/scripts",
+        "./catkin_ws/devel/lib/python2.7/dist-packages",
+    ],
+    // for debugging in vs code terminal
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH":"${workspaceFolder}/catkin_ws/devel/lib/python2.7/dist-packages"
+    },
+}

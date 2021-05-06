@@ -135,7 +135,7 @@ modify the default device number in `speech_recognition.launch` from "" to "0"
 ### Setup NLP Part
 
 ```bash
-# NLTK natural language toolkit
+# NLTK natural language toolkit, last version with python 2.7 support
 python -m pip install nltk==3.4.5
 # install aria2c for multi thread download
 sudo apt install snapd
