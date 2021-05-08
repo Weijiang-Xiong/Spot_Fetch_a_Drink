@@ -7,6 +7,7 @@ This is the repository for Project Spot Fetch a Drink at Aalto University.
 In this project, we are going to develop a voice command functionality for the [Spot Robot](https://www.bostondynamics.com/spot), the package has been tested on 
 
 - Ubuntu 18.04 with ROS Melodic
+- Ubuntu 20.04 with ROS Noetic
 
 Upon project completion, Spot would become a nice life assistant, which is able to take voice command from you and perform tasks, like fetching an object and going somewhere.
 The applications of this project includes routine inspection and damage fixing in a large factory plant, autonomous guiding for blind people and daily care for the elderly/children or disabled people.
@@ -98,6 +99,9 @@ And you can move the robot with keyboard
 
 
 
+### Setup the Mapping and Navigation
+
+To be added...
 
 ### Setup Speech Recognition
 
@@ -158,3 +162,90 @@ java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer \
 -preload tokenize,ssplit,pos,lemma,ner,parse,depparse \
 -status_port 9000 -port 9000 -timeout 15000 &
 ```
+
+
+
+### Setup Object Detection Node
+
+```bash
+# Note: Object Detection tested on Noetic, but should work with Melodic and python2 as well. 
+sudo apt install python3-rosdep2
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y --rosdistro noetic
+
+# Clone the darknet repo and follow the setup instructions
+cd ~/Spot_Project/catkin_ws/src/
+git clone --recursive git@github.com:leggedrobotics/darknet_ros.git
+
+# Make sure to install cuda using 
+sudo apt install nvidia-cuda-toolkit
+
+```
+
+Confirm with `nvcc --version` and `nvidia-smi` commands that it is installed correctly
+
+If you are on Noetic, make sure to replace `BGR` with `RGB` in `~/Spot_Project/catkin_ws/src/darknet_ros/darknet_ros/src/YoloObjectDetector.cpp` in case if the image colors look wrong.
+
+If you want to use the custom model for simulator that we trained, you can download our weights from [yolov3.weights+configuration](not available yet) or [yolov3_tiny.weights+configuration](to be added) if you'd like to trade accuracy for speed. The instructions for setting up custom weights can be found on `https://github.com/leggedrobotics/darknet_ros`
+
+
+```bash
+#In case if you would like to train your own model, you can use for example 
+github.com:confiscar/ROScreenShot
+# for capturing `/camera/image_raw` topic and then label the pictures using 
+github.com:ManivannanMurugavel/Yolo-Annotation-Tool-New-
+# You might have to run 
+sudo apt-get install python3-pil python3-pil.imagetk
+
+#After labeling is done, just train it as you would train a regular Yolo model at ~/Spot_Project/catkin_ws/src/darknet_ros/
+
+```
+
+Our trained model includes the following classes: 
+
+```bash
+- beer
+- coke
+- extinguisher
+- hammer
+- screwdriver
+- wrench
+- person
+
+```
+
+If you are missing these models in your gazebo environment, clone this repo to your source folder and add the directory to gazebo `git clone https://github.com/osrf/gazebo_models`
+
+```bash
+# If you haven't yet started the simulator do so 
+
+cd ~/Spot_Project/catkin_ws/
+catkin_make
+source ./devel/setup.bash
+roslaunch champ_gazebo spawn_world.launch    
+roslaunch spot_config spawn_robot.launch world_init_x:=-2 world_init_y:=1
+roslaunch champ_teleop teleop.launch
+
+# Start darknet node
+roslaunch darknet_ros darknet_ros.launch
+
+```
+If the compiler complains about the g++ gcc version, try the following [fix](https://github.com/espressomd/espresso/issues/3654): 
+
+```bash
+# Start image processing node
+# Make sure that the CMakeLists.txt file in src/image_processing folder points to the correct darknet_ros directory, then run
+python3 ~/Spot_Project/catkin_ws/src/image_processing/scripts/Yolo_xyz_node.py
+
+# If everything is done correctly, it should be posting XYZ coordinates of the detected object to /object_detection topic 
+
+```	
+
+
+
+
+
+
+
+
+
