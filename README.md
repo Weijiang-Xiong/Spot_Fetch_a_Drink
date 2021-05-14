@@ -197,9 +197,9 @@ github.com:ManivannanMurugavel/Yolo-Annotation-Tool-New-
 # You might have to run 
 sudo apt-get install python3-pil python3-pil.imagetk
 
-#After labeling is done, just train it as you would train a regular Yolo model at ~/Spot_Project/catkin_ws/src/darknet_ros/
 
 ```
+After labeling is done, just train it as you would train a regular Yolo model at ~/Spot_Project/catkin_ws/src/darknet_ros/
 
 Our trained model includes the following classes: 
 
@@ -234,12 +234,11 @@ If the compiler complains about the g++ gcc version, try the following [fix](htt
 
 ```bash
 # Start image processing node
-# Make sure that the CMakeLists.txt file in src/image_processing folder points to the correct darknet_ros directory, then run
-python3 ~/Spot_Project/catkin_ws/src/image_processing/scripts/Yolo_xyz_node.py
+roslaunch image_processing image_processing.launch
+```
 
-# If everything is done correctly, it should be posting XYZ coordinates of the detected object to /object_detection topic 
 
-```	
+If everything is done correctly, it should be posting XYZ coordinates of the detected object to /object_detection topic 
 
 
 
