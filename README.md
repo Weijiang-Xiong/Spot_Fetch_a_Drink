@@ -199,7 +199,7 @@ sudo apt-get install python3-pil python3-pil.imagetk
 
 
 ```
-After labeling is done, just train it as you would train a regular Yolo model at ~/Spot_Project/catkin_ws/src/darknet_ros/
+After labeling is done, just train it as you would train a regular `Yolo model at ~/Spot_Project/catkin_ws/src/darknet_ros/darknet`
 
 Our trained model includes the following classes: 
 
@@ -230,7 +230,7 @@ roslaunch champ_teleop teleop.launch
 roslaunch darknet_ros darknet_ros.launch
 
 ```
-If the compiler complains about the g++ gcc version, try the following [fix](https://github.com/espressomd/espresso/issues/3654): 
+If the compiler complains about the g++ gcc version, try the following [fix](https://github.com/espressomd/espresso/issues/3654)
 
 ```bash
 # Start image processing node
