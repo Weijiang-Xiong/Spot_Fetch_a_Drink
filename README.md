@@ -184,10 +184,16 @@ sudo apt install nvidia-cuda-toolkit
 
 Confirm with `nvcc --version` and `nvidia-smi` commands that it is installed correctly
 
-If you are on Noetic, make sure to replace `BGR` with `RGB` in `~/Spot_Project/catkin_ws/src/darknet_ros/darknet_ros/src/YoloObjectDetector.cpp` in case if the image colors look wrong.
+If you are on Noetic, make sure to replace `BGR8` with `RGB8` in `~/Spot_Project/catkin_ws/src/darknet_ros/darknet_ros/src/YoloObjectDetector.cpp` on lines 165 and 196 in case if the image colors look wrong.
 
-If you want to use the custom model for simulator that we trained, you can download our weights from [yolov3.weights+configuration](not available yet) or [yolov3_tiny.weights+configuration](to be added) if you'd like to trade accuracy for speed. The instructions for setting up custom weights can be found on `https://github.com/leggedrobotics/darknet_ros`
+If you want to use the custom model specifically trained to detect simulation models, you can download our weights from [yolov3.weights+configuration](not available yet) or [yolov3_tiny.weights+configuration](to be added) if you'd like to trade accuracy for speed. The instructions for setting up custom weights can be found on `https://github.com/leggedrobotics/darknet_ros`
 
+Follow the below steps in order to create your own object detection dataset based on simulation models.
+1. Place the models in an empty gazebo world.
+2. Press the 'Record a Video' option on top right corner of gazebo. This will start recording the camera scene of gazebo.
+3. Use your mouse to rotate around the object and collect views from different angles and orientation of the model.
+4. To convert the video into images, run this command in the directory the video is saved in: `ffmpeg -i input.mp4 -qscale:v 2 output_%03d.jpg`
+5. Delete any pictures that do not contain the object and start annotating the images with their respective classes using the annotation tool available at `https://github.com/ManivannanMurugavel/Yolo-Annotation-Tool-New-`
 
 ```bash
 #In case if you would like to train your own model, you can use for example 
