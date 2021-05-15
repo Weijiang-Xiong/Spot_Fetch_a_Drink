@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   cv_bridge
+  geometry_msgs
   #python-numpy
   darknet_ros_msgs
   message_generation
