@@ -1,0 +1,6 @@
+[submodule "catkin_ws/src/darknet_ros"]
+	path = catkin_ws/src/darknet_ros
+	url = https://github.com/leggedrobotics/darknet_ros.git
+[submodule "catkin_ws/src/--recursive"]
+	path = catkin_ws/src/--recursive
+	url = https://github.com/leggedrobotics/darknet_ros.git
