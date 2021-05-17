@@ -49,10 +49,20 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
  add_message_files(
+   DIRECTORY
+   ../image_processing/msg
+   FILES
+   ObjectDetectedMSG.msg
+
+ )
+
+ add_message_files(
+   DIRECTORY
+   ../spot_audio_command/msg
    FILES
    MessageCMD.msg
-   ObjectDetectedMSG.msg
  )
+
 
 ## Generate services in the 'srv' folder
 # add_service_files(

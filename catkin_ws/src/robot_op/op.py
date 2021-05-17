@@ -10,8 +10,8 @@ from geometry_msgs.msg import Twist
 from champ_msgs.msg import Pose as PoseLite
 from geometry_msgs.msg import PoseStamped as Pose
 from move_base_msgs.msg import MoveBaseGoal as NavGoal
-from robot_op.msg import MessageCMD as CMD
-from robot_op.msg import ObjectDetectedMSG
+from spot_audio_command.msg import MessageCMD as CMD
+from image_processing.msg import ObjectDetectedMSG
 from std_msgs.msg import Int8
 import tf
 
