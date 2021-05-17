@@ -21,20 +21,13 @@ import numpy as np
 import time
 
 
-
-
-	
-
 class Robot_op:
-
-	
-
 
 	def __init__(self):
 		self.name = ""
 		self.tasks = []
 		self.objects = []
-		self.objects_detected = 0
+		self.objects_detected = []
 
 		self.nav_goal_publisher = rospy.Publisher('move_base_simple/goal', Pose, queue_size = 1)
 		self.cmd_listener = rospy.Subscriber("taskChannel", CMD, self.ProcessCMD)
@@ -44,20 +37,22 @@ class Robot_op:
 
 		rospy.spin()
 
+
 	def ProcessCMD(self, data):
 		self.tasks.append(data)
-		self.objects = data.obj_type
 		if len(self.tasks) == 2:
 			self.ExecuteCMD(self.tasks[0])
+		else:
+			self.objects = list(data.obj_type)
+
 
 	def Continue(self, data):
-		self.objects_detected += 1
-		print(self.objects_detected)
-		if self.objects_detected > len(self.objects):
-			self.objects_detected = 0
-			self.ExecuteCMD(self.tasks[1])
-		else:
-			self.Publish_to_object_detection(self.objects[self.objects_detected])
+		if not data.class_id in self.objects_detected:
+			self.objects_detected.append(data.class_id)
+			self.objects.remove(data.class_id)
+			if not self.objects:
+				self.ExecuteCMD(self.tasks[1])
+
 
 	def ExecuteCMD(self, data):
 
@@ -77,13 +72,14 @@ class Robot_op:
 		body_pose.pose.orientation.w = quaternion[3]
 
 		self.nav_goal_publisher.publish(body_pose)
-		if data == self.tasks[0]:
+		if self.objects:
 			self.Publish_to_object_detection(data.obj_type[0])
+		else:
+			del self.tasks[:]
+			del self.objects[:]
+			del self.objects_detected[:]
 
 
-
-		
-		
 	# SEND OBJECT TO OBJECT DETECTION
 	def Publish_to_object_detection(self, data):
 		object_to_detect = Int8()
@@ -92,41 +88,8 @@ class Robot_op:
 
 		self.od_target_publisher.publish(object_to_detect)
 
-
-
-
-	# 	self.loop()
 		
-
-	# def loop(self):
-
-	# 	while not rospy.is_shutdown():
-
-	# 		body_pose = Pose()
-
-	# 		body_pose.header.frame_id="map"
-
-	# 		body_pose.pose.position.x = 0
-	# 		body_pose.pose.position.y = 0
-	# 		body_pose.pose.position.z = 0
-
-	# 		quaternion = tf.transformations.quaternion_from_euler(0,0,0)
-	# 		body_pose.pose.orientation.x = quaternion[0]
-	# 		body_pose.pose.orientation.y = quaternion[1]
-	# 		body_pose.pose.orientation.z = quaternion[2]
-	# 		body_pose.pose.orientation.w = quaternion[3]
-
-	# 		time.sleep(3)
-
-	# 		self.nav_goal_publisher.publish(body_pose)
-		
-
-		
-		
-
-
-
-
+	
 if __name__ == "__main__":
 	rospy.init_node('robot_op')
 	robot_op = Robot_op()
