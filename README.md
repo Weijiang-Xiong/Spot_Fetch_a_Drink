@@ -4,7 +4,7 @@
 
 This is the repository for Project Spot Fetch a Drink at Aalto University.
 
-In this project, we are going to develop a voice command functionality for the [Spot Robot](https://www.bostondynamics.com/spot), the package has been tested on 
+In this project, we are going to develop a voice command and object detection functionality for the [Spot Robot](https://www.bostondynamics.com/spot), the package has been tested on 
 
 - Ubuntu 18.04 with ROS Melodic
 - Ubuntu 20.04 with ROS Noetic
@@ -186,17 +186,17 @@ Confirm with `nvcc --version` and `nvidia-smi` commands that it is installed cor
 
 If you are on Noetic, make sure to replace `BGR8` with `RGB8` in `~/Spot_Project/catkin_ws/src/darknet_ros/darknet_ros/src/YoloObjectDetector.cpp` on lines 165 and 196 in case if the image colors look wrong.
 
-If you want to use the custom model specifically trained to detect simulation models, you can download our weights from [yolov3.weights+configuration](not available yet) or [yolov3_tiny.weights+configuration](https://drive.google.com/drive/folders/16IDdNnn3Xil46e80YhMN6PEVQF92JaU-?usp=sharing) if you'd like to trade accuracy for speed. The instructions for setting up custom weights can be found on `https://github.com/leggedrobotics/darknet_ros`
+If you want to use the custom model specifically trained to detect simulation models, you can download our weights from [yolov3.weights+configuration](not available yet) or, if you'd like to trade accuracy for speed: [yolov3_tiny.weights+configuration](https://drive.google.com/drive/folders/15S6IcYnXf7nEkFSOLfQwYFNOghOIdoBf?usp=sharing). The instructions for setting up custom weights can be found on `https://github.com/leggedrobotics/darknet_ros`. Better instructions for training can be found at `https://github.com/AlexeyAB/darknet#how-to-train-to-detect-your-custom-objects`
 
 Follow the below steps in order to create your own object detection dataset based on simulation models.
 1. Place the models in an empty gazebo world.
 2. Press the 'Record a Video' option on top right corner of gazebo. This will start recording the camera scene of gazebo.
 3. Use your mouse to rotate around the object and collect views from different angles and orientation of the model.
 4. To convert the video into images, run this command in the directory the video is saved in: `ffmpeg -i input.mp4 -qscale:v 2 output_%03d.jpg`
-5. Alternatively, use, for example, `github.com:confiscar/ROScreenShot` for capturing `/camera/image_raw` topic and then label the pictures using 
+5. Alternatively, use, for example, `github.com:confiscar/ROScreenShot` for capturing `/camera/image_raw` topic (not recommended)
 6. Delete any pictures that do not contain the object and start annotating the images with their respective classes using the annotation tool available at `https://github.com/ManivannanMurugavel/Yolo-Annotation-Tool-New-`. You might have to run `sudo apt-get install python3-pil python3-pil.imagetk`
 
-After labeling is done, just train it as you would train a regular `Yolo model at ~/Spot_Project/catkin_ws/src/darknet_ros/darknet`
+After labeling is done, just train it as you would train a regular Yolo model at `~/Spot_Project/catkin_ws/src/darknet_ros/darknet`
 
 Our trained model includes the following classes: 
 
@@ -208,10 +208,12 @@ Our trained model includes the following classes:
 - screwdriver
 - wrench
 - person
+- cylinder (test mode for grasping)
+- cube (test mode for grasping)
 
 ```
 
-If you are missing these models in your gazebo environment, clone this repo to your source folder and add the directory to gazebo `git clone https://github.com/osrf/gazebo_models`
+If you are missing these models in your gazebo environment, clone this repo to your source folder and add the directory to gazebo `git clone https://github.com/osrf/gazebo_models` or copy them directly from `~/Spot_Project/catkin_ws/src/models`
 
 ```bash
 # If you haven't yet started the simulator do so 
@@ -221,6 +223,7 @@ catkin_make
 source ./devel/setup.bash
 roslaunch champ_gazebo spawn_world.launch    
 roslaunch spot_config spawn_robot.launch world_init_x:=-2 world_init_y:=1
+roslaunch spot_config navigate.launch rviz:=true
 roslaunch champ_teleop teleop.launch
 
 ```
