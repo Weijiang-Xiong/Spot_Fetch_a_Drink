@@ -73,7 +73,7 @@ class Robot_op:
 
 		self.nav_goal_publisher.publish(body_pose)
 		if self.objects:
-			self.Publish_to_object_detection(self.objects[0])
+			self.Publish_to_object_detection(data.obj_type[0])
 		else:
 			del self.tasks[:]
 			del self.objects[:]
