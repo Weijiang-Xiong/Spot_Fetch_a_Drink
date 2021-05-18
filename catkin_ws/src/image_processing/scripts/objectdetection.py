@@ -8,6 +8,7 @@ from image_processing.msg import ObjectDetectedMSG
 from sensor_msgs.msg import  PointCloud2, Image
 from std_msgs.msg import Header, Int8
 from geometry_msgs.msg import PointStamped, Point
+from nav_msgs.msg import Odometry
 import tf2_ros, tf2_geometry_msgs
 
 class ObjectDetectionServer:
@@ -16,6 +17,7 @@ class ObjectDetectionServer:
 		self.objectsCount = None
 		self.pointcloud = None
 		self.image = None
+		self.location = None
 		
 		
 		#trained objects
@@ -37,7 +39,8 @@ class ObjectDetectionServer:
 		# Set 0 for real time
 		self.publishing_rate = 1
 
-		self.latestTimeStamp = rospy.Time.now()
+		self.latestTimeStamp = None
+
 
 		
 	# One callback to get xy coordinates and another to count the number of detected objects	
@@ -68,11 +71,19 @@ class ObjectDetectionServer:
 	def speech_callback(self, msg):
 		# "Store" the message received.
 		self.classRequested = msg.data
-		self.get_dimensions()
+		self.get_position()
+
+	# Get current position of the robot	
+	def location_callback(self, msg):
+		# "Store" the message received.
+		self.location = msg.pose.pose.position
 	
 	# Convert xy to xyz and publish 	
 	def get_position(self):
 	
+		self.x_loc = None
+		self.y_loc = None
+		self.z_loc = None
 		
 		if (self.darknet is not None) and (self.darknet.bounding_boxes is not None) and (self.pointcloud is not None) and (self.classRequested is not None):
 			for item in self.darknet.bounding_boxes:
@@ -94,10 +105,6 @@ class ObjectDetectionServer:
 					self.y_loc = cloud_arr[int(y)][int(x)][1]
 					self.z_loc = cloud_arr[int(y)][int(x)][2]
 					
-					# if self.objectsCount.count == 0:
-					# 	self.x_loc = 0
-					# 	self.y_loc = 0
-					# 	self.z_loc = 0
 					self.convert_to_worldframe(np.array([self.x_loc, self.y_loc, self.z_loc]))	
 					rospy.loginfo("Publishing data to {} /object_detection..".format(self.message_id))	
 					#rospy.sleep(self.publishing_rate)
@@ -105,6 +112,8 @@ class ObjectDetectionServer:
 					break
 					
 		else:
+
+			self.convert_to_worldframe(None)
 			pass		
 			## For clearing the screen 
 			#clear = lambda: os.system('clear')
@@ -127,7 +136,11 @@ class ObjectDetectionServer:
 	def convert_to_worldframe(self, data):
 		
 		try:
-			target_frame = "map"
+
+			if data is None or self.location is None: 
+				return
+
+			target_frame = "base_link"
 			source_frame = "camera_depth_optical_frame"
 			
 			# define a source point
@@ -137,7 +150,8 @@ class ObjectDetectionServer:
 			
 			point_wrt_target = tf2_geometry_msgs.do_transform_point(PointStamped(point=point_wrt_source),transformation).point
 			
-			self.publish_destination(np.array([point_wrt_target.x, point_wrt_target.y, point_wrt_target.z]))
+			self.publish_destination(np.array([self.location.x + point_wrt_target.x, self.location.y + point_wrt_target.y, self.location.z + point_wrt_target.z, 
+			point_wrt_target.x, point_wrt_target.y, point_wrt_target.z]))
 
 
 		
@@ -157,17 +171,24 @@ class ObjectDetectionServer:
 		msg.header.frame_id = "map"
 		msg.header.stamp = rospy.Time.now()
 		
-		#TODO Add the requested class from navigation
-		msg.class_id = self.classRequested
-		msg.class_name = self.class_list[self.classRequested]
-		
-		msg.goal_x = data[0]
-		msg.goal_y = data[1]
-		msg.goal_z = data[2]
 
-		self.pub.publish(msg)
-		self.message_id += 1
-		#self.latestTimeStamp = msg.header.stamp 
+
+		if self.darknet.bounding_boxes is not None and  (self.latestTimeStamp is None or self.latestTimeStamp < msg.header.stamp): 
+			#TODO Add the requested class from navigation
+			msg.class_id = self.classRequested
+			msg.class_name = self.class_list[self.classRequested]
+			
+			msg.goal_x = data[0]
+			msg.goal_y = data[1]
+			msg.goal_z = data[2]
+			
+			msg.distance_from_robot_x = data[3]
+			msg.distance_from_robot_y = data[4]
+			msg.distance_from_robot_z = data[5]
+
+			self.pub.publish(msg)
+			self.message_id += 1
+			self.latestTimeStamp = msg.header.stamp 
 		
 
 
@@ -182,13 +203,14 @@ if __name__ == '__main__':
 		rospy.Subscriber('/darknet_ros/bounding_boxes', BoundingBoxes, server.darknet_callback)
 		rospy.Subscriber('/darknet_ros/found_object', ObjectCount, server.darknet_counter_callback)
 		rospy.Subscriber('/camera/depth/points', PointCloud2, server.pointcloud_callback)
+		rospy.Subscriber('/odom/ground_truth', Odometry, server.location_callback)
+
 		
 		# Not used
 		rospy.Subscriber('/camera/rgb/image_raw', Image, server.image_callback)
 		
 		## Add the topic from Navigation/speech when ready
 		rospy.Subscriber('/object_to_detect', Int8, server.speech_callback, queue_size=1)
-		rospy.sleep(server.publishing_rate)
 		
 		# testing for transformations
 		tf_buffer = tf2_ros.Buffer(rospy.Duration(1200.0)) #tf buffer length
