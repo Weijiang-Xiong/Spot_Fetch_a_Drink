@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# when using python 2, uncomment this and remove all function annotations
-# from __future__ import division, with_statement, print_function
-
 # print the python version
 # import sys
 # print(sys.version)
@@ -86,10 +83,17 @@ def main():
         RobotSubject.create_robot()
         all_robots:Dict[str, RobotSubject] = RobotSubject.get_working_bots()
 
-    result = TestCase()
     
     while not rospy.is_shutdown():
-        # result = client.recognize()  # Please say 'Hello, world!' towards microphone
+        
+        # result = TestCase()
+        try:
+            result = client.recognize()  # Please say 'Hello, world!' towards microphone
+        except KeyboardInterrupt:
+            break
+        except:
+            print("Oops, didn't catch that")
+        
         if len(result.transcript) == 0:
             continue
         

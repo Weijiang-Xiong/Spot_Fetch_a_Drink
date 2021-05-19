@@ -12,18 +12,17 @@ class TestCase():
             "hey Alice can you fetch me a beer and two cakes from the kitchen and send this book or the hammer to the study",
             "hey Frank can you bring me a cup from my bedroom",
             "hey Alice can you go around the campus",
-            "hey Charlie can you send this headset to my bedroom"
+            "hey Charlie can you send this headset to the living room"
             ]
 
 class WorldKnowledge():
-    # TODO what about the map itself? what kind of format do we have
-    # write these into a file 
-    known_places = {"start": (0.0, 0.0), "kitchen": (0.0, 6.0), "bedroom": (6.0, 6.0), "study": (5.0, 5.0)}
+    known_places = {"start": (0.0, 0.0), "kitchen": (0.0, 6.0), "bedroom": (6.0, 6.0), "study": (5.0, 5.0), "table": (3.7, 4.2)}
     default_storage = {"kitchen": ["drink", "coke", "soda", "beer", "water", "cup", "cake"],
                        "study":["laptop", "computer", "headset"]}
     # a pre-defined route 
     route = {"campus":[(2.0, 0.0), (4.0, 0.0), (4.0, 2.0), (4.0, 4.0), (2.0, 2.0), (0.0, 0.0)]}
-    item_code = {"drink":0, "coke":1, "soda":2, "beer":3, "water":4,"cup":5, "laptop":6, "computer":7, "headset":8, "cake":9, "book":10}
+    item_code = {"drink":0, "beer":0, "coke":1, "soda":1,  "extinguisher":2, "hammer":3, "screwdriver":4, 
+                 "wrench":5, "person":6,"cylinder":7,"cube":8, "cake":9, "book":10}
     
     # where the items are stored by default, dict(item_name: place_name)
     item_index = dict()
@@ -66,7 +65,7 @@ class Action():
         self.take_all:bool = True # need to take all objects
         self.iobj = None
         self.iobj_type = None
-        self.obl = []
+        self.obl = None
         self.obl_case = None # get the items from the location (obl) or send them to the location
         
     @property
@@ -111,6 +110,9 @@ class Action():
             # (('beer', 'NN'), 'conj:and', ('cakes', 'NNS'))
             if relation =='conj:or' and governor in self.obj_names and dependent in self.obj_names:
                 self.take_all = False
+            # 
+            if relation == "compound" and governor == self.obl:
+                self.obl = dependent + " " + self.obl
                 
 
     def gen_command(self, print_result=True):
@@ -187,7 +189,7 @@ class RobotSubject(object):
             msg.task_count = task_count
             msg.robot_name = self.name
             msg.cmd_type = task
-            msg.goal_x, msg.goal_y = place if isinstance(place, tuple) else WorldKnowledge.known_places.get(place, "start")
+            msg.goal_x, msg.goal_y = place if isinstance(place, tuple) else WorldKnowledge.known_places.get(place, (0.0, 0.0))
             # item should be either None or a list of (amount, name)
             if isinstance(items, list):
                 for (amount, item) in items:
