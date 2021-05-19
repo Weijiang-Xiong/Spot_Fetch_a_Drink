@@ -19,13 +19,9 @@ class ObjectDetectionServer:
 		self.image = None
 		self.location = None
 		
-		
 		#trained objects
 		self.class_list = ["beer", "coke", "extinguisher", "hammer", "screwdriver", "wrench", "person", "cylinder", "cube"]
 
-		#object IDs defined in speech (to fix)
-    	#item_code = {"drink":0, "coke":1, "soda":2, "beer":3, "water":4,"cup":5, "laptop":6, "computer":7, "headset":8, "cake":9, "book":10}
-		
 		#object requested to detect (by speech)
 		self.classRequested = None
 		
@@ -67,7 +63,7 @@ class ObjectDetectionServer:
 		self.image = msg
 		self.get_dimensions()
 	
-	#TODO Add speech/navigation callback
+	# Speech/navigation callback
 	def speech_callback(self, msg):
 		# "Store" the message received.
 		self.classRequested = msg.data
@@ -106,20 +102,16 @@ class ObjectDetectionServer:
 					self.z_loc = cloud_arr[int(y)][int(x)][2]
 					
 					self.convert_to_worldframe(np.array([self.x_loc, self.y_loc, self.z_loc]))	
-					rospy.loginfo("Publishing data to {} /object_detection..".format(self.message_id))	
 					#rospy.sleep(self.publishing_rate)
 					self.classRequested = None
 					break
+				else:
+					self.convert_to_worldframe(None)
 					
 		else:
 
 			self.convert_to_worldframe(None)
 			pass		
-			## For clearing the screen 
-			#clear = lambda: os.system('clear')
-			#clear()
-			#rospy.loginfo("Waiting for data..")	
-			#rospy.sleep(self.publishing_rate)
 			
 	# For testing
 	def get_dimensions(self):
@@ -136,7 +128,6 @@ class ObjectDetectionServer:
 	def convert_to_worldframe(self, data):
 		
 		try:
-
 			if data is None or self.location is None: 
 				return
 
@@ -174,7 +165,7 @@ class ObjectDetectionServer:
 
 
 		if self.darknet.bounding_boxes is not None and  (self.latestTimeStamp is None or self.latestTimeStamp < msg.header.stamp): 
-			#TODO Add the requested class from navigation
+			# Publishing message to topic
 			msg.class_id = self.classRequested
 			msg.class_name = self.class_list[self.classRequested]
 			
@@ -186,6 +177,7 @@ class ObjectDetectionServer:
 			msg.distance_from_robot_y = data[4]
 			msg.distance_from_robot_z = data[5]
 
+			rospy.loginfo("Publishing data to {} /object_detection..".format(msg.message_id))	
 			self.pub.publish(msg)
 			self.message_id += 1
 			self.latestTimeStamp = msg.header.stamp 
@@ -194,7 +186,7 @@ class ObjectDetectionServer:
 
 if __name__ == '__main__':
 	try:	
-		rospy.init_node('listener')
+		rospy.init_node('vision')
 		#rospy.wait_for_service('spawn')
 		server = ObjectDetectionServer()
 		
