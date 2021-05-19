@@ -86,27 +86,29 @@ def main():
     
     while not rospy.is_shutdown():
         
-        # result = TestCase()
-        try:
-            result = client.recognize()  # Please say 'Hello, world!' towards microphone
-        except KeyboardInterrupt:
-            break
-        except:
-            print("Oops, didn't catch that")
+        result = TestCase()
+        # try:
+        #     result = client.recognize()  # Please say 'Hello, world!' towards microphone
+        # except KeyboardInterrupt:
+        #     break
+        # except:
+            # print("Oops, didn't catch that")
         
         if len(result.transcript) == 0:
             continue
         
         for sentence in result.transcript:
             print(sentence) # => 'Hello, world!'
+            sentence = sentence.lower()
             # sentence: str
             if sentence.startswith("hey"):
                 # robot name should be one of the active
                 robot_name = sentence.split("hey", 1)[-1].split()[0]
+                robot_name = robot_name.capitalize()
                 if robot_name.capitalize() not in all_robots.keys():
                     rospy.loginfo("{} is not working".format(robot_name))
                     continue
-                sentence = sentence.replace(robot_name, robot_name.capitalize()+" ,", 1) # add a comma behind name
+                sentence = sentence.replace(robot_name.lower(), robot_name+" ,", 1) # add a comma behind name
                 cmd_list = gen_commands(dep_parser, sentence, all_robots[robot_name], send_ros=True)
             else:
                 rospy.loginfo("Please start with \'hey ROBOT_NAME\'")
