@@ -86,13 +86,13 @@ def main():
     
     while not rospy.is_shutdown():
         
-        result = TestCase()
-        # try:
-        #     result = client.recognize()  # Please say 'Hello, world!' towards microphone
-        # except KeyboardInterrupt:
-        #     break
-        # except:
-            # print("Oops, didn't catch that")
+        # result = TestCase()
+        try:
+            result = client.recognize()  # Please say 'Hello, world!' towards microphone
+        except KeyboardInterrupt:
+            break
+        except:
+            print("Oops, didn't catch that")
         
         if len(result.transcript) == 0:
             continue
