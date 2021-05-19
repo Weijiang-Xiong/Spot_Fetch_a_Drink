@@ -98,10 +98,14 @@ And you can move the robot with keyboard
 ![TeleOp](pics/spot_teleop.png)
 
 
-
 ### Setup the Mapping and Navigation
 
-To be added...
+By starting the navigation node, the teleop option can be omitted: 
+```bash 
+# Start the node
+roslaunch robot_op robot_op.launch
+
+```
 
 ### Setup Speech Recognition
 
@@ -163,6 +167,13 @@ java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer \
 -status_port 9000 -port 9000 -timeout 15000 &
 ```
 
+```bash
+# Then start the node
+roslaunch ros_speech_recognition speech_recognition.launch engine:=Google device:=0
+rosrun spot_audio_command scripts/SRclient.py
+
+```
+Start the robot by giving it a command starting with 'hey ROBOT_NAME'
 
 
 ### Setup Object Detection Node
@@ -223,8 +234,6 @@ catkin_make
 source ./devel/setup.bash
 roslaunch champ_gazebo spawn_world.launch    
 roslaunch spot_config spawn_robot.launch world_init_x:=-2 world_init_y:=1
-roslaunch spot_config navigate.launch rviz:=true
-roslaunch champ_teleop teleop.launch
 
 ```
 If the compiler complains about the g++ gcc version, try the following [fix](https://github.com/espressomd/espresso/issues/3654)
@@ -236,7 +245,7 @@ roslaunch image_processing image_processing.launch
 ```
 
 
-If everything is done correctly, it should be posting XYZ coordinates of the detected object to /object_detection topic 
+If everything is done correctly, it should be posting XYZ coordinates of the detected object to /object_detection topic whenever there is a request.
 
 
 
