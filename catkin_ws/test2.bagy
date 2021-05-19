@@ -1,0 +1,16 @@
+header: 
+  seq: 2
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: ''
+robot_name: "Alice"
+mission_count: 0
+task_count: 1
+item_type: [3, 9]
+item_count: [1, 2]
+obj_type: []
+obj_count: []
+goal_x: 0.0
+goal_y: 0.0
+cmd_type: "wait"

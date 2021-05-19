@@ -1,0 +1,12 @@
+header: 
+  seq: 2
+  stamp: 
+    secs: 0
+    nsecs:         0
+  frame_id: ''
+message_id: 1
+class_id: 1
+class_name: ''
+goal_x: 1
+goal_y: 1
+goal_z: 1

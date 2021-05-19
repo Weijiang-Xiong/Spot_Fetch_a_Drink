@@ -1,0 +1,24 @@
+<launch>
+    <node name="robot_op" pkg ="robot_op" type="op.py"/>
+
+	<arg name="frame_prefix" value=""/>
+	<arg name="robot_name" value="/"/>
+
+	<!-- Map server -->
+	<arg name="map_file" default="$(find spot_config)/maps/map.yaml"/>
+	<node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" >
+	        <param name="frame_id" value="$(arg frame_prefix)map" />
+        </node>
+        
+	<!-- AMCL used for localization -->
+        <include file="$(find spot_config)/launch/include/amcl.launch">
+	        <arg name="frame_prefix" value="$(arg frame_prefix)"/>
+        </include>
+
+        <!-- Calls navigation stack -->
+        <include file="$(find spot_config)/launch/include/move_base.launch">
+	        <arg name="frame_prefix" value="$(arg frame_prefix)"/>
+	        <arg name="robot_name"   value="$(arg robot_name)"/>
+        </include>
+
+</launch>
