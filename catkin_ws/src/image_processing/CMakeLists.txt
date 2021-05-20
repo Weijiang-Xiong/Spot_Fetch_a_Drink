@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   cv_bridge
   geometry_msgs
+  nav_msgs
   #python-numpy
   darknet_ros_msgs
   message_generation
@@ -125,7 +126,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ImageProcessing
-   CATKIN_DEPENDS darknet_ros_msgs roscpp rospy sensor_msgs std_msgs message_runtime
+   CATKIN_DEPENDS darknet_ros_msgs roscpp rospy sensor_msgs std_msgs nav_msgs message_runtime
 #  DEPENDS system_lib
 )
 

@@ -5,3 +5,6 @@ string class_name
 float64 goal_x
 float64 goal_y
 float64 goal_z
+float64 distance_from_robot_x
+float64 distance_from_robot_y
+float64 distance_from_robot_z
