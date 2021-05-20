@@ -126,21 +126,34 @@ python3 -m pip install pocketsphinx
 
 Install python SpeechRecognition package, pyAudio 
 
+For Ubuntu 18.04 | ROS Melodic
 ```bash
 sudo apt-get install python-pyaudio python3-pyaudio
 python -m pip install google-cloud-speech
 python -m pip install SpeechRecognition
 ```
-
+For Ubuntu 20.04 | ROS Noetic
+```bash
+sudo apt-get install python3-pyaudio python3-pyaudio
+python3 -m pip install google-cloud-speech
+python3 -m pip install SpeechRecognition
+```
 Install ros speech recognition package, then fix a small bug.
 
+For Ubuntu 18.04 | ROS Melodic
 ```bash
 sudo apt install ros-melodic-ros-speech-recognition
 roscd ros_speech_recognition/launch/
 sudo gedit speech_recognition.launch
 ```
+For Ubuntu 20.04 | ROS Noetic
+```bash
+sudo apt install ros-noetic-ros-speech-recognition
+roscd ros_speech_recognition/launch/
+sudo gedit speech_recognition.launch
+```
 
-modify the default device number in `speech_recognition.launch` from "" to "0"
+modify the default device number in `speech_recognition.launch` from "" to "0" on line number 9
 
 ```bash
 <arg name="device" default="0" /> 
