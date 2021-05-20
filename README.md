@@ -113,9 +113,15 @@ This section summarizes the installation guide here https://github.com/Uberi/spe
 
 Build PocketSphinx-Python from source 
 
+For Ubuntu 18.04 | ROS Melodic
 ```bash
 sudo apt-get install python python-all-dev python-pip build-essential swig git libpulse-dev libasound2-dev
 python -m pip install pocketsphinx
+```
+For Ubuntu 20.04 | ROS Noetic
+```bash
+sudo apt-get install python python-all-dev python3-pip build-essential swig git libpulse-dev libasound2-dev
+python3 -m pip install pocketsphinx
 ```
 
 Install python SpeechRecognition package, pyAudio 
