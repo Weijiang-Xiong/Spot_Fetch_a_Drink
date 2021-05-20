@@ -269,6 +269,15 @@ If everything is done correctly, it should be posting XYZ coordinates of the det
 
 
 ### Setup Grasping and Object Detection Node
+```
+sudo apt-get update
+sudo apt-get install ros-$ROS_DISTRO-fetch-gazebo-demo
+cd catkin_ws/src
+git clone https://github.com/donghaospurs/fetch_gazebo.git
+cd ..
+catkin_make
+```
+
 - spot simulation
 
 ```roslaunch fetch_gazebo playground.launch 
