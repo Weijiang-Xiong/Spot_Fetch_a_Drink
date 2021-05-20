@@ -98,7 +98,7 @@ And you can move the robot with keyboard
 ![TeleOp](pics/spot_teleop.png)
 
 
-### Setup the Mapping and Navigation
+### Setup the Navigation
 
 By starting the navigation node, the teleop option can be omitted: 
 ```bash 
