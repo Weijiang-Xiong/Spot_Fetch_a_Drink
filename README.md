@@ -280,14 +280,16 @@ catkin_make
 
 - spot simulation
 
-```roslaunch fetch_gazebo playground.launch 
+```
+roslaunch fetch_gazebo playground.launch 
 roslaunch spot_config spawn_robot.launch world_init_x:=1 world_init_y:=5 
 roslaunch fetch_gazebo_demo demo_spot.launch 
 ```
 
 - fetch simulation
 
-```roslaunch fetch_gazebo playground.launch 
+```
+roslaunch fetch_gazebo playground.launch 
 roslaunch fetch_gazebo fetch.launch 
 roslaunch fetch_gazebo_demo demo.launch 
 roslaunch image_processing image_processing_old.launch 
