@@ -303,5 +303,23 @@ roslaunch spot_config spawn_robot.launch robot_name:=/spot world_init_x:=1 world
 roslaunch fetch_gazebo fetch.launch 
 roslaunch multiple_robot_nav navigation.launch
 ```
+- spot with arm simulation
+```
+sudo apt install -y python-rosdep
+cd <your_ws>/src
+git clone https://github.com/donghaospurs/spot_manipulator.git
+git clone https://github.com/donghaospurs/spot_manipulator_gui.git
+git clone https://github.com/donghaospurs/fetch_gazebo.git
+git clone https://github.com/chvmp/champ_teleop
+cd ..
+rosdep install --from-paths src --ignore-src -r -y
+```
 
+
+```
+roslaunch spot_manipulator gazebo.launch
+roslaunch spot_manipulator move_group.launch
+roslaunch spot_manipulator_gui spot_manipulator_gui.launch
+roslaunch champ_teleop teleop.launch
+```
 
