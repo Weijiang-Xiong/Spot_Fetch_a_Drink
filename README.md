@@ -104,7 +104,6 @@ By starting the navigation node, the teleop option can be omitted:
 ```bash 
 # Start the node
 roslaunch robot_op robot_op.launch
-
 ```
 
 ### Setup Speech Recognition
@@ -113,50 +112,37 @@ This section summarizes the installation guide here https://github.com/Uberi/spe
 
 Build PocketSphinx-Python from source 
 
-For Ubuntu 18.04 | ROS Melodic
 ```bash
 sudo apt-get install python python-all-dev python-pip build-essential swig git libpulse-dev libasound2-dev
 python -m pip install pocketsphinx
 ```
-For Ubuntu 20.04 | ROS Noetic
-```bash
-sudo apt-get install python python-all-dev python3-pip build-essential swig git libpulse-dev libasound2-dev
-python3 -m pip install pocketsphinx
-```
-
 Install python SpeechRecognition package, pyAudio 
 
-For Ubuntu 18.04 | ROS Melodic
 ```bash
 sudo apt-get install python-pyaudio python3-pyaudio
 python -m pip install google-cloud-speech
 python -m pip install SpeechRecognition
 ```
-For Ubuntu 20.04 | ROS Noetic
-```bash
-sudo apt-get install python3-pyaudio python3-pyaudio
-python3 -m pip install google-cloud-speech
-python3 -m pip install SpeechRecognition
-```
-Install ros speech recognition package, then fix a small bug.
+Install ros speech recognition package, then fix a small bug. (for ROS noetic, just change ros distribution name from `melodic` to `noetic`)
 
-For Ubuntu 18.04 | ROS Melodic
 ```bash
 sudo apt install ros-melodic-ros-speech-recognition
 roscd ros_speech_recognition/launch/
 sudo gedit speech_recognition.launch
 ```
-For Ubuntu 20.04 | ROS Noetic
-```bash
-sudo apt install ros-noetic-ros-speech-recognition
-roscd ros_speech_recognition/launch/
-sudo gedit speech_recognition.launch
-```
-
-modify the default device number in `speech_recognition.launch` from "" to "0" on line number 9
+modify the default device number in `speech_recognition.launch` from "" to "0" on line number 9, to make the default parameters work (or enter `device:=0` when launching `ros_speech_recognition.launch`)
 
 ```bash
 <arg name="device" default="0" /> 
+```
+
+Modify line 160 of `rospy/impl/tcpros_base.py` 
+
+```bash
+roscd 
+cd lib/python2.7/dist-packages/rospy/impl
+sudo gedit tcpros_base.py
+# then modify line 160 into  `(e_errno, msg) = e.args`, i.e., delete the third output variable "*_"
 ```
 
 ### Setup NLP Part
@@ -176,7 +162,7 @@ cd CoreNLP
 aria2c -x 4 http://nlp.stanford.edu/software/stanford-corenlp-4.2.0-models-english.jar
 ```
 
-run CoreNLP server
+### run CoreNLP server and Speech Recognition
 
 ```bash
 export CLASSPATH=$CLASSPATH:~/Spot_Project/CoreNLP/*:
@@ -190,10 +176,8 @@ java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer \
 # Then start the node
 roslaunch ros_speech_recognition speech_recognition.launch engine:=Google device:=0
 rosrun spot_audio_command scripts/SRclient.py
-
 ```
-Start the robot by giving it a command starting with 'hey ROBOT_NAME'
-
+Then you can speak to the microphone to test the speech node, for example "Hey Alice, can you fetch me a drink from the kitchen". Be sure to start with "hey robot_name". 
 
 ### Setup Object Detection Node
 
