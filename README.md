@@ -306,4 +306,13 @@ roslaunch spot_manipulator move_group.launch
 roslaunch spot_manipulator_gui spot_manipulator_gui.launch
 roslaunch champ_teleop teleop.launch
 ```
+### For final demo
 
+- If you finish all the setup, you can use the following command for automatically grasping and placing.
+
+```
+roslaunch fetch_gazebo playground.launch 
+roslaunch fetch_gazebo fetch.launch 
+roslaunch fetch_gazebo_demo demo.launch 
+roslaunch image_processing image_processing_old.launch 
+```
